@@ -2,9 +2,12 @@
   "name": "budget-sync",
   "private": true,
   "scripts": {
+    "start": "node index.js",
+    "dev": "npm run build && node -r 'dotenv/config' index.js",
     "build": "tsc"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "ynab": "^1.21.0"
   },
   "devDependencies": {
