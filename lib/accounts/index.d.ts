@@ -1,14 +1,16 @@
+import { DateTime } from "luxon";
+
 export declare interface Account {
   id: string;
+  createdOn: DateTime;
   isOpen: boolean;
-  createdAt: Date;
 }
 
 export declare interface AccountTransaction {
   id: string;
+  on: DateTime;
   payee: string;
   amount: number;
-  createdAt: Date;
 }
 
 export declare class AccountProvider<Options extends object> {
@@ -17,6 +19,6 @@ export declare class AccountProvider<Options extends object> {
   listAccounts(): Promise<Account[]>;
   listTransactions(
     accountId: string,
-    since: Date
+    since: DateTime
   ): Promise<AccountTransaction[]>;
 }

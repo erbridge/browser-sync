@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import fetch, { Headers } from "node-fetch";
 import type { AccountProvider } from ".";
 
@@ -25,12 +26,14 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
 
     return accounts.map(({ id, closed, created }) => ({
       id,
+      createdOn: DateTime.fromISO(created)
+        .toUTC(0, { keepLocalTime: true })
+        .startOf("day"),
       isOpen: !closed,
-      createdAt: new Date(created),
     }));
   }
 
-  async listTransactions(accountId: string, since: Date) {
+  async listTransactions(accountId: string, since: DateTime) {
     const { transactions } = await this.get<{
       transactions: {
         id: string;
@@ -42,20 +45,22 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
         decline_reason?: string;
       }[];
     }>(
-      `/transactions?account_id=${accountId}&since=${since.toISOString()}&expand[]=merchant`
+      `/transactions?account_id=${accountId}&since=${since.toISO()}&expand[]=merchant`
     );
 
     return transactions
       .filter(({ decline_reason }) => !decline_reason)
       .map(({ id, created, description, amount, merchant, counterparty }) => ({
         id,
+        on: DateTime.fromISO(created)
+          .toUTC(0, { keepLocalTime: true })
+          .startOf("day"),
         payee:
           counterparty?.preferred_name ||
           counterparty?.name ||
           merchant?.name ||
           description,
         amount,
-        createdAt: new Date(created),
       }));
   }
 
