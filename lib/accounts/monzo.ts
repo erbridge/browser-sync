@@ -30,6 +30,35 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
     }));
   }
 
+  async listTransactions(accountId: string, since: Date) {
+    const { transactions } = await this.get<{
+      transactions: {
+        id: string;
+        created: string;
+        description: string;
+        amount: number;
+        merchant?: { name: string };
+        counterparty?: { name: string; preferred_name?: string };
+        decline_reason?: string;
+      }[];
+    }>(
+      `/transactions?account_id=${accountId}&since=${since.toISOString()}&expand[]=merchant`
+    );
+
+    return transactions
+      .filter(({ decline_reason }) => !decline_reason)
+      .map(({ id, created, description, amount, merchant, counterparty }) => ({
+        id,
+        payee:
+          counterparty?.preferred_name ||
+          counterparty?.name ||
+          merchant?.name ||
+          description,
+        amount,
+        createdAt: new Date(created),
+      }));
+  }
+
   private async get<T extends object>(endpoint: string) {
     const headers = new Headers({
       Authorization: "Bearer " + this.accessToken,
