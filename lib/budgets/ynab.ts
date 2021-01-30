@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+import { nullAsUndefined } from "null-as-undefined";
 import { API } from "ynab";
 import type { BudgetProvider } from ".";
 
@@ -21,5 +23,29 @@ export default class YNAB implements BudgetProvider<YNABOptions> {
     const { budgets } = response.data;
 
     return budgets.map(({ id }) => ({ id }));
+  }
+
+  async listAccountTransactions(
+    budgetId: string,
+    accountId: string,
+    since: DateTime
+  ) {
+    const response = await this.api.transactions.getTransactionsByAccount(
+      budgetId,
+      accountId,
+      since.toJSDate()
+    );
+    const { transactions } = response.data;
+
+    return transactions
+      .filter(({ deleted }) => !deleted)
+      .map(({ id, date, amount, payee_name }) => ({
+        id,
+        on: DateTime.fromISO(date)
+          .toUTC(0, { keepLocalTime: true })
+          .startOf("day"),
+        payee: nullAsUndefined(payee_name),
+        amount: amount / 10,
+      }));
   }
 }
