@@ -1,6 +1,7 @@
 on:
   schedule:
     - cron: "00 * * * *"
+  workflow_dispatch:
 
 env:
   MONZO_ACCESS_TOKEN: ${{ secrets.MONZO_ACCESS_TOKEN }}
