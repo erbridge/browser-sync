@@ -39,13 +39,14 @@ export default class YNAB implements BudgetProvider<YNABOptions> {
 
     return transactions
       .filter(({ deleted }) => !deleted)
-      .map(({ id, date, amount, payee_name }) => ({
+      .map(({ id, date, amount, payee_name, import_id }) => ({
         id,
         on: DateTime.fromISO(date)
           .toUTC(0, { keepLocalTime: true })
           .startOf("day"),
         payee: nullAsUndefined(payee_name),
         amount: amount / 10,
+        importId: nullAsUndefined(import_id),
       }));
   }
 

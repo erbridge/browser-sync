@@ -13,6 +13,7 @@ export declare interface NewBudgetTransaction {
 export declare interface BudgetTransaction extends NewBudgetTransaction {
   id: string;
   payee?: string;
+  importId?: string;
 }
 
 export declare class BudgetProvider<Options extends object> {
