@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { nullAsUndefined } from "null-as-undefined";
 import { API, SaveTransaction } from "ynab";
 import type { BudgetProvider, NewBudgetTransaction } from ".";
+import { AccountTransaction } from "../accounts";
 
 const defaultOptions = {};
 
@@ -50,6 +51,40 @@ export default class YNAB implements BudgetProvider<YNABOptions> {
       }));
   }
 
+  async selectNewAccountTransactions(
+    budgetId: string,
+    accountId: string,
+    since: DateTime,
+    accountTransactions: AccountTransaction[]
+  ) {
+    const budgetTransactions = await this.listAccountTransactions(
+      budgetId,
+      accountId,
+      since
+    );
+
+    return accountTransactions.filter((accountTransaction) => {
+      const accountTransactionImportId = this.makeImportId(accountTransaction);
+
+      return !budgetTransactions.find(function matchExistingTransaction(
+        budgetTransaction
+      ) {
+        if (accountTransactionImportId === budgetTransaction.importId) {
+          return true;
+        }
+
+        const isSameDate = accountTransaction.on.equals(budgetTransaction.on);
+        const isSamePayee =
+          accountTransaction.payee.toLowerCase() ===
+          budgetTransaction.payee?.toLowerCase();
+        const isSameAmount =
+          accountTransaction.amount === budgetTransaction.amount;
+
+        return isSameDate && isSamePayee && isSameAmount;
+      });
+    });
+  }
+
   async createTransactions(
     budgetId: string,
     accountId: string,
@@ -74,7 +109,7 @@ export default class YNAB implements BudgetProvider<YNABOptions> {
     });
   }
 
-  private makeImportId(transaction: NewBudgetTransaction) {
+  private makeImportId(transaction: NewBudgetTransaction | AccountTransaction) {
     const amount = transaction.amount * 10;
     const date = transaction.on.toISO();
 

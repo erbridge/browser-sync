@@ -25,6 +25,12 @@ export declare class BudgetProvider<Options extends object> {
     accountId: string,
     since: DateTime
   ): Promise<BudgetTransaction[]>;
+  selectNewAccountTransactions(
+    budgetId: string,
+    accountId: string,
+    since: DateTime,
+    accountTransactions: AccountTransaction[]
+  ): Promise<AccountTransaction[]>;
   createTransactions(
     budgetId: string,
     accountId: string,
