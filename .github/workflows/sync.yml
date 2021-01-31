@@ -1,0 +1,20 @@
+on:
+  schedule:
+    - cron: "00 * * * *"
+
+env:
+  MONZO_ACCESS_TOKEN: ${{ secrets.MONZO_ACCESS_TOKEN }}
+  YNAB_ACCESS_TOKEN: ${{ secrets.YNAB_ACCESS_TOKEN }}
+  YNAB_BUDGET_ID: ${{ secrets.YNAB_BUDGET_ID }}
+  YNAB_ACCOUNT_MAP: ${{ secrets.YNAB_ACCOUNT_MAP }}
+  DAYS_TO_SYNC: ${{ secrets.DAYS_TO_SYNC }}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: nodenv/actions/setup-nodenv@v2
+      - run: npm ci
+      - run: npm run build
+      - run: npm start
