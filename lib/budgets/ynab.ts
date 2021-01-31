@@ -104,9 +104,11 @@ export default class YNAB implements BudgetProvider<YNABOptions> {
       };
     });
 
-    await this.api.transactions.createTransactions(budgetId, {
+    const response = await this.api.transactions.createTransactions(budgetId, {
       transactions: budgetTransactions,
     });
+
+    return response.data.transaction_ids.length;
   }
 
   async syncTransactions(
@@ -122,7 +124,7 @@ export default class YNAB implements BudgetProvider<YNABOptions> {
       accountTransactions
     );
 
-    await this.createTransactions(budgetId, accountId, newTransactions);
+    return await this.createTransactions(budgetId, accountId, newTransactions);
   }
 
   private makeImportId(transaction: NewBudgetTransaction | AccountTransaction) {

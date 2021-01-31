@@ -35,11 +35,11 @@ export declare class BudgetProvider<Options extends object> {
     budgetId: string,
     accountId: string,
     transactions: NewBudgetTransaction[]
-  ): Promise<void>;
+  ): Promise<number>;
   syncTransactions(
     budgetId: string,
     accountId: string,
     since: DateTime,
     accountTransactions: AccountTransaction[]
-  ): Promise<void>;
+  ): Promise<number>;
 }
