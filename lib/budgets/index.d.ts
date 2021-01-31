@@ -4,11 +4,15 @@ export declare interface Budget {
   id: string;
 }
 
-export declare interface BudgetTransaction {
-  id: string;
+export declare interface NewBudgetTransaction {
   on: DateTime;
-  payee?: string;
+  payee: string;
   amount: number;
+}
+
+export declare interface BudgetTransaction extends NewBudgetTransaction {
+  id: string;
+  payee?: string;
 }
 
 export declare class BudgetProvider<Options extends object> {
@@ -20,4 +24,9 @@ export declare class BudgetProvider<Options extends object> {
     accountId: string,
     since: DateTime
   ): Promise<BudgetTransaction[]>;
+  createTransactions(
+    budgetId: string,
+    accountId: string,
+    transactions: NewBudgetTransaction[]
+  ): Promise<void>;
 }
