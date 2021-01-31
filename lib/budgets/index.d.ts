@@ -36,4 +36,10 @@ export declare class BudgetProvider<Options extends object> {
     accountId: string,
     transactions: NewBudgetTransaction[]
   ): Promise<void>;
+  syncTransactions(
+    budgetId: string,
+    accountId: string,
+    since: DateTime,
+    accountTransactions: AccountTransaction[]
+  ): Promise<void>;
 }

@@ -109,6 +109,22 @@ export default class YNAB implements BudgetProvider<YNABOptions> {
     });
   }
 
+  async syncTransactions(
+    budgetId: string,
+    accountId: string,
+    since: DateTime,
+    accountTransactions: AccountTransaction[]
+  ) {
+    const newTransactions = await this.selectNewAccountTransactions(
+      budgetId,
+      accountId,
+      since,
+      accountTransactions
+    );
+
+    await this.createTransactions(budgetId, accountId, newTransactions);
+  }
+
   private makeImportId(transaction: NewBudgetTransaction | AccountTransaction) {
     const amount = transaction.amount * 10;
     const date = transaction.on.toISO();
