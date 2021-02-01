@@ -15,6 +15,7 @@ const DEFAULT_DAYS_TO_SYNC = 14;
 
 process.on("unhandledRejection", (error) => {
   console.error(error);
+  process.exit(1);
 });
 
 (async function run() {
