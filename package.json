@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0",
-    "luxon": "^1.25.0",
+    "luxon": "^1.26.0",
     "node-fetch": "^2.6.1",
     "null-as-undefined": "^0.3.0",
     "ynab": "^1.21.0"
