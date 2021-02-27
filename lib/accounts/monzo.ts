@@ -49,7 +49,7 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
     );
 
     return transactions
-      .filter(({ decline_reason }) => !decline_reason)
+      .filter(({ decline_reason, amount }) => !decline_reason || amount !== 0)
       .map(({ id, created, description, amount, merchant, counterparty }) => ({
         id,
         on: DateTime.fromISO(created)
