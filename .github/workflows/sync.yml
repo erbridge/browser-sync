@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
 
 env:
-  MONZO_ACCESS_TOKEN: ${{ secrets.MONZO_ACCESS_TOKEN }}
-  YNAB_ACCESS_TOKEN: ${{ secrets.YNAB_ACCESS_TOKEN }}
-  YNAB_BUDGET_ID: ${{ secrets.YNAB_BUDGET_ID }}
-  YNAB_ACCOUNT_MAP: ${{ secrets.YNAB_ACCOUNT_MAP }}
-  DAYS_TO_SYNC: ${{ secrets.DAYS_TO_SYNC }}
+  BUDGET_SYNC_MONZO_ACCESS_TOKEN: ${{ secrets.BUDGET_SYNC_MONZO_ACCESS_TOKEN }}
+  BUDGET_SYNC_YNAB_ACCESS_TOKEN: ${{ secrets.BUDGET_SYNC_YNAB_ACCESS_TOKEN }}
+  BUDGET_SYNC_YNAB_BUDGET_ID: ${{ secrets.BUDGET_SYNC_YNAB_BUDGET_ID }}
+  BUDGET_SYNC_YNAB_ACCOUNT_MAP: ${{ secrets.BUDGET_SYNC_YNAB_ACCOUNT_MAP }}
+  BUDGET_SYNC_DAYS_TO_SYNC: ${{ secrets.BUDGET_SYNC_DAYS_TO_SYNC }}
 
 jobs:
   run:
@@ -18,4 +18,4 @@ jobs:
       - uses: nodenv/actions/setup-nodenv@v2
       - run: npm ci
       - run: npm run build
-      - run: npm start
+      - run: npm start -- run
