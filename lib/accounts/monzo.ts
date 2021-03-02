@@ -90,7 +90,10 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
         decline_reason?: string;
       }[];
     }>(
-      `/transactions?account_id=${accountId}&since=${since.toISO()}&expand[]=merchant`
+      `/transactions?` +
+        `account_id=${accountId}&` +
+        `since=${since.toISO()}&` +
+        `expand[]=merchant`
     );
 
     return transactions
