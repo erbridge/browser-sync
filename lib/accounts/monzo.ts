@@ -3,7 +3,7 @@ import fetch, { Headers } from "node-fetch";
 import { URLSearchParams } from "url";
 import type { AccountProvider } from ".";
 
-const API_BASE_URL = "https://api.monzo.com/";
+const API_BASE_URL = "https://api.monzo.com";
 
 const defaultOptions = {};
 
