@@ -6,6 +6,7 @@ import Monzo from "../../accounts/monzo";
 export interface Argv {
   monzoClientId?: string;
   monzoClientSecret?: string;
+  quiet?: boolean;
 }
 
 export const builder: { [key: string]: yargs.Options } = {
@@ -15,26 +16,32 @@ export const builder: { [key: string]: yargs.Options } = {
   "monzo-client-secret": {
     string: true,
   },
+  quiet: {
+    boolean: true,
+    default: false,
+    describe: "Suppress non-essential output",
+  },
 };
 
 export const handler = async ({
   monzoClientId,
   monzoClientSecret,
+  quiet,
 }: yargs.Arguments<Argv>) => {
   if (!monzoClientId || !monzoClientSecret) {
     throw new Error("You must provide a client ID and secret to auth Monzo");
   }
 
-  await auth(monzoClientId, monzoClientSecret);
+  await auth(monzoClientId, monzoClientSecret, quiet);
 };
 
-async function auth(clientId: string, clientSecret: string) {
+async function auth(clientId: string, clientSecret: string, quiet?: boolean) {
   const port = 3333;
   const redirectUri = `http://localhost:${port}`;
 
   const { state, url: authUrl } = Monzo.makeOAuthURL(clientId, redirectUri);
 
-  console.log(`Opening your browser to: ${authUrl}`);
+  quiet || console.log(`Opening your browser to: ${authUrl}`);
   await open(authUrl);
 
   const code = await new Promise<string>((resolve, reject) => {
@@ -46,11 +53,11 @@ async function auth(clientId: string, clientSecret: string) {
       if (isSuccess) {
         res.writeHead(200, { "Content-Type": "text/plain" });
         res.end("Success! Return to your terminal to continue...");
-        console.log("Success!");
+        quiet || console.log("Success!");
       } else {
         res.writeHead(401, { "Content-Type": "text/plain" });
         res.end("Invalid state!");
-        console.log("Something went wrong.");
+        quiet || console.log("Something went wrong.");
       }
 
       app.server!.close(() => {
@@ -65,11 +72,12 @@ async function auth(clientId: string, clientSecret: string) {
         throw err;
       }
 
-      console.log(`Waiting for response from Monzo on port ${port}...`);
+      quiet ||
+        console.log(`Waiting for response from Monzo on port ${port}...`);
     });
   });
 
-  console.log("Requesting access token from Monzo...");
+  quiet || console.log("Requesting access token from Monzo...");
 
   const { accessToken } = await Monzo.completeOAuth(
     clientId,
@@ -78,9 +86,9 @@ async function auth(clientId: string, clientSecret: string) {
     code
   );
 
-  console.log("Success!");
+  quiet || console.log("Success!");
 
   console.log(`BUDGET_SYNC_MONZO_ACCESS_TOKEN=${accessToken}`);
 
-  console.log("Now approve access in your Monzo app!");
+  quiet || console.log("Now approve access in your Monzo app!");
 }

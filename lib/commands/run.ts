@@ -7,6 +7,7 @@ import YNAB from "../budgets/ynab";
 export interface Argv {
   daysToSync?: number;
   monzoAccessToken?: string;
+  quiet?: boolean;
   ynabAccessToken?: string;
   ynabAccountMap?: string;
   ynabBudgetId?: string;
@@ -30,6 +31,11 @@ export const builder: Command["builder"] = (args) =>
       "monzo-access-token": {
         string: true,
       },
+      quiet: {
+        boolean: true,
+        default: false,
+        describe: "Suppress non-essential output",
+      },
       "ynab-access-token": {
         string: true,
       },
@@ -42,7 +48,7 @@ export const builder: Command["builder"] = (args) =>
         string: true,
       },
     })
-    .group(["days-to-sync", "help"], "General options:")
+    .group(["days-to-sync", "help", "quiet"], "General options:")
     .group(["monzo-access-token"], "Monzo options:")
     .group(
       ["ynab-access-token", "ynab-account-map", "ynab-budget-id"],
@@ -52,6 +58,7 @@ export const builder: Command["builder"] = (args) =>
 export const handler: Command["handler"] = async ({
   daysToSync,
   monzoAccessToken,
+  quiet,
   ynabAccessToken,
   ynabBudgetId,
   ynabAccountMap,
@@ -61,7 +68,7 @@ export const handler: Command["handler"] = async ({
   const accountProviders: { [name: string]: AccountProvider<any> } = {};
 
   if (monzoAccessToken) {
-    console.log("Initializing monzo provider...");
+    quiet || console.log("Initializing monzo provider...");
     accountProviders.monzo = new Monzo({ accessToken: monzoAccessToken });
   }
 
@@ -79,7 +86,7 @@ export const handler: Command["handler"] = async ({
     );
   }
 
-  console.log("Done!");
+  quiet || console.log("Done!");
 };
 
 async function syncYnab(
@@ -87,31 +94,32 @@ async function syncYnab(
   budgetId: string,
   rawAccountMap: string,
   accountProviders: { [name: string]: AccountProvider<any> },
-  since: DateTime
+  since: DateTime,
+  quiet?: boolean
 ) {
-  console.log("Initializing ynab provider...");
+  quiet || console.log("Initializing ynab provider...");
   const ynab = new YNAB({ accessToken });
 
-  console.log("Syncing ynab budget following the ynab account map...");
+  quiet || console.log("Syncing ynab budget following the ynab account map...");
   const accountMap: { [id: string]: string } = JSON.parse(rawAccountMap);
 
   for (const [budgetAccountId, realAccountId] of Object.entries(accountMap)) {
     const [accountProviderName, accountId] = realAccountId.split(":");
     const accountProvider = accountProviders[accountProviderName];
 
-    console.log(`Fetching ${accountProviderName} transactions...`);
+    quiet || console.log(`Fetching ${accountProviderName} transactions...`);
     const accountTransactions = await accountProvider.listTransactions(
       accountId,
       since
     );
 
-    console.log("Syncing transactions with ynab...");
+    quiet || console.log("Syncing transactions with ynab...");
     const count = await ynab.syncTransactions(
       budgetId,
       budgetAccountId,
       since,
       accountTransactions
     );
-    console.log(`Synced ${count} transactions with ynab.`);
+    quiet || console.log(`Synced ${count} transactions with ynab.`);
   }
 }
