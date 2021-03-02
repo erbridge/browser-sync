@@ -1,0 +1,63 @@
+on:
+  schedule:
+    - cron: "30 00 * * *"
+  workflow_dispatch:
+
+jobs:
+  refresh-monzo:
+    env:
+      BUDGET_SYNC_MONZO_CLIENT_ID: ${{ secrets.BUDGET_SYNC_MONZO_CLIENT_ID }}
+      BUDGET_SYNC_MONZO_CLIENT_SECRET:
+        ${{ secrets.BUDGET_SYNC_MONZO_CLIENT_SECRET }}
+      BUDGET_SYNC_MONZO_REFRESH_TOKEN:
+        ${{ secrets.BUDGET_SYNC_MONZO_REFRESH_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: secrets
+        name: Check for required secrets
+        run: |
+          EXISTS=$([ -n $BUDGET_SYNC_MONZO_REFRESH_TOKEN ] && echo 'true' || echo 'false')
+          echo "Secret exists: $EXISTS"
+          echo "::set-output name=exists::$EXISTS"
+
+      - if: steps.secrets.outputs.exists == 'true'
+        uses: actions/checkout@v2
+
+      - if: steps.secrets.outputs.exists == 'true'
+        uses: nodenv/actions/setup-nodenv@v2
+
+      - if: steps.secrets.outputs.exists == 'true'
+        run: npm ci
+
+      - if: steps.secrets.outputs.exists == 'true'
+        run: npm run build
+
+      - id: refresh
+        name: Refresh access token
+        if: steps.secrets.outputs.exists == 'true'
+        run: |
+          export $(npm start -- auth monzo --refresh --quiet | tail -n2)
+
+          echo "::add-mask::$BUDGET_SYNC_MONZO_ACCESS_TOKEN"
+          echo "::set-output name=access_token::$BUDGET_SYNC_MONZO_ACCESS_TOKEN"
+
+          echo "::add-mask::$BUDGET_SYNC_MONZO_REFRESH_TOKEN"
+          echo "::set-output name=refresh_token::$BUDGET_SYNC_MONZO_REFRESH_TOKEN"
+
+      - name: Update access token secret
+        if: steps.secrets.outputs.exists == 'true'
+        uses: hmanzur/actions-set-secret@v2.0.0
+        with:
+          name: BUDGET_SYNC_MONZO_ACCESS_TOKEN
+          value: ${{ steps.refresh.outputs.access_token }}
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+
+      - name: Update refresh token secret
+        if: steps.secrets.outputs.exists == 'true'
+        uses: hmanzur/actions-set-secret@v2.0.0
+        with:
+          name: BUDGET_SYNC_MONZO_REFRESH_TOKEN
+          value: ${{ steps.refresh.outputs.refresh_token }}
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
