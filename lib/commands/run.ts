@@ -58,47 +58,60 @@ export const handler: Command["handler"] = async ({
 }) => {
   const since = DateTime.utc().startOf("day").minus({ days: daysToSync });
 
-  const providers: { [name: string]: AccountProvider<any> } = {};
+  const accountProviders: { [name: string]: AccountProvider<any> } = {};
 
   if (monzoAccessToken) {
     console.log("Initializing monzo provider...");
-    providers.monzo = new Monzo({ accessToken: monzoAccessToken });
+    accountProviders.monzo = new Monzo({ accessToken: monzoAccessToken });
   }
 
-  if (Object.keys(providers).length === 0) {
-    console.error("No account providers specified.");
-    return;
+  if (Object.keys(accountProviders).length === 0) {
+    throw new Error("No account providers specified");
   }
 
   if (ynabAccessToken && ynabBudgetId && ynabAccountMap) {
-    console.log("Initializing ynab provider...");
-    const ynab = new YNAB({ accessToken: ynabAccessToken });
-
-    console.log("Syncing ynab budget following the ynab account map...");
-    const accountMap = JSON.parse(ynabAccountMap);
-
-    for (const [budgetAccountId, realAccountId] of Object.entries<string>(
-      accountMap
-    )) {
-      const [accountProviderName, accountId] = realAccountId.split(":");
-      const accountProvider = providers[accountProviderName];
-
-      console.log(`Fetching ${accountProviderName} transactions...`);
-      const accountTransactions = await accountProvider.listTransactions(
-        accountId,
-        since
-      );
-
-      console.log("Syncing transactions with ynab...");
-      const count = await ynab.syncTransactions(
-        ynabBudgetId,
-        budgetAccountId,
-        since,
-        accountTransactions
-      );
-      console.log(`Synced ${count} transactions with ynab.`);
-    }
+    syncYnab(
+      ynabAccessToken,
+      ynabBudgetId,
+      ynabAccountMap,
+      accountProviders,
+      since
+    );
   }
 
   console.log("Done!");
 };
+
+async function syncYnab(
+  accessToken: string,
+  budgetId: string,
+  rawAccountMap: string,
+  accountProviders: { [name: string]: AccountProvider<any> },
+  since: DateTime
+) {
+  console.log("Initializing ynab provider...");
+  const ynab = new YNAB({ accessToken });
+
+  console.log("Syncing ynab budget following the ynab account map...");
+  const accountMap: { [id: string]: string } = JSON.parse(rawAccountMap);
+
+  for (const [budgetAccountId, realAccountId] of Object.entries(accountMap)) {
+    const [accountProviderName, accountId] = realAccountId.split(":");
+    const accountProvider = accountProviders[accountProviderName];
+
+    console.log(`Fetching ${accountProviderName} transactions...`);
+    const accountTransactions = await accountProvider.listTransactions(
+      accountId,
+      since
+    );
+
+    console.log("Syncing transactions with ynab...");
+    const count = await ynab.syncTransactions(
+      budgetId,
+      budgetAccountId,
+      since,
+      accountTransactions
+    );
+    console.log(`Synced ${count} transactions with ynab.`);
+  }
+}
