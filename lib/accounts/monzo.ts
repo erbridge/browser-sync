@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import fetch, { Headers } from "node-fetch";
+import { URLSearchParams } from "url";
 import type { AccountProvider } from ".";
 
 const API_BASE_URL = "https://api.monzo.com/";
@@ -11,6 +12,50 @@ export interface MonzoOptions extends Partial<typeof defaultOptions> {
 }
 
 export default class Monzo implements AccountProvider<MonzoOptions> {
+  static makeOAuthURL(
+    clientId: string,
+    redirectUri: string,
+    state?: string | number
+  ) {
+    state = state ?? Math.floor(Math.random() * 1000000).toString();
+
+    const url = `https://auth.monzo.com/?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}&response_type=code&state=${state}`;
+
+    return { state, url };
+  }
+
+  static async completeOAuth(
+    clientId: string,
+    clientSecret: string,
+    redirectUri: string,
+    code: string
+  ) {
+    const response = await fetch(API_BASE_URL + "/oauth2/token", {
+      method: "POST",
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
+        code,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`${response.status}: ${response.statusText}`);
+    }
+
+    const { access_token } = (await response.json()) as {
+      access_token: string;
+    };
+
+    return {
+      accessToken: access_token,
+    };
+  }
+
   private accessToken: string;
 
   constructor(options: MonzoOptions) {
