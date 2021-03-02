@@ -47,12 +47,44 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
 
-    const { access_token } = (await response.json()) as {
+    const { access_token, refresh_token } = (await response.json()) as {
       access_token: string;
+      refresh_token?: string;
     };
 
     return {
       accessToken: access_token,
+      refreshToken: refresh_token,
+    };
+  }
+
+  static async refreshOAuth(
+    clientId: string,
+    clientSecret: string,
+    oldRefreshToken: string
+  ) {
+    const response = await fetch(API_BASE_URL + "/oauth2/token", {
+      method: "POST",
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: oldRefreshToken,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`${response.status}: ${response.statusText}`);
+    }
+
+    const { access_token, refresh_token } = (await response.json()) as {
+      access_token: string;
+      refresh_token?: string;
+    };
+
+    return {
+      accessToken: access_token,
+      refreshToken: refresh_token,
     };
   }
 
