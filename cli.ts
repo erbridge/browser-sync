@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import yargs from "yargs";
 import * as auth from "./lib/commands/auth";
 import * as run from "./lib/commands/run";
