@@ -1,13 +1,15 @@
 {
   "name": "budget-sync",
   "description": "Sync account transactions with your budgeting service!",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": "github:erbridge/budget-sync",
   "files": [
     "lib/**/*.js"
   ],
   "main": "index.js",
-  "bin": "cli.js",
+  "bin": {
+    "budget-sync": "cli.js"
+  },
   "license": "Climate-Strike-MIT-1.0",
   "engines": {
     "node": ">=14"
