@@ -10,6 +10,7 @@
   "bin": {
     "budget-sync": "cli.js"
   },
+  "types": "index.d.ts",
   "license": "Climate-Strike-MIT-1.0",
   "engines": {
     "node": ">=14"
