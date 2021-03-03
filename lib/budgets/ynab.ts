@@ -124,6 +124,10 @@ export default class YNAB implements BudgetProvider<YNABOptions> {
       accountTransactions
     );
 
+    if (newTransactions.length === 0) {
+      return 0;
+    }
+
     return await this.createTransactions(budgetId, accountId, newTransactions);
   }
 
