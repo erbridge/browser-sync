@@ -1,3 +1,6 @@
 node_modules/
+*.d.ts
+!/lib/accounts/index.d.ts
+!/lib/budgets/index.d.ts
 *.js
 .env
