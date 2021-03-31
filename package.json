@@ -28,7 +28,7 @@
     "open": "^8.0.4",
     "polka": "^0.5.2",
     "yargs": "^16.2.0",
-    "ynab": "^1.21.0"
+    "ynab": "^1.23.0"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.0",
