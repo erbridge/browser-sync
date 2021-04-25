@@ -85,8 +85,6 @@ export const handler: Command["handler"] = async ({
       since
     );
   }
-
-  quiet || console.log("Done!");
 };
 
 async function syncYnab(

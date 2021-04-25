@@ -139,6 +139,4 @@ async function refreshAuth(
 
   console.log(`BUDGET_SYNC_MONZO_ACCESS_TOKEN=${accessToken}`);
   console.log(`BUDGET_SYNC_MONZO_REFRESH_TOKEN=${refreshToken}`);
-
-  quiet || console.log("Done!");
 }
