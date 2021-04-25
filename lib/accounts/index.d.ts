@@ -19,6 +19,7 @@ export declare class AccountProvider<Options extends object> {
   listAccounts(): Promise<Account[]>;
   listTransactions(
     accountId: string,
-    since: DateTime
+    since: DateTime,
+    before?: DateTime
   ): Promise<AccountTransaction[]>;
 }

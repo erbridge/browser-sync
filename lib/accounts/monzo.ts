@@ -110,7 +110,11 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
     }));
   }
 
-  async listTransactions(accountId: string, since: DateTime) {
+  async listTransactions(
+    accountId: string,
+    since: DateTime,
+    before = DateTime.utc()
+  ) {
     const { transactions } = await this.get<{
       transactions: {
         id: string;
@@ -125,6 +129,7 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
       `/transactions?` +
         `account_id=${accountId}&` +
         `since=${since.toISO()}&` +
+        `before=${before.toISO()}&` +
         `expand[]=merchant`
     );
 
