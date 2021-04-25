@@ -44,7 +44,9 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
     });
 
     if (!response.ok) {
-      throw new Error(`${response.status}: ${response.statusText}`);
+      throw new Error(
+        `${response.status}: ${response.statusText} - ${await response.text()}`
+      );
     }
 
     const { access_token, refresh_token } = (await response.json()) as {
@@ -157,7 +159,9 @@ export default class Monzo implements AccountProvider<MonzoOptions> {
     const response = await fetch(API_BASE_URL + endpoint, { headers });
 
     if (!response.ok) {
-      throw new Error(`${response.status}: ${response.statusText}`);
+      throw new Error(
+        `${response.status}: ${response.statusText} - ${await response.text()}`
+      );
     }
 
     return (await response.json()) as T;
