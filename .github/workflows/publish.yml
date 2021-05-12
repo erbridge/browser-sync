@@ -11,6 +11,6 @@ jobs:
       - uses: nodenv/actions/setup-nodenv@v2
       - run: npm ci
       - run: npm run build
-      - uses: JS-DevTools/npm-publish@v1
+      - uses: JS-DevTools/npm-publish@v1.4.3
         with:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
