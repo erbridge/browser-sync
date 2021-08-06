@@ -22,18 +22,18 @@
   },
   "dependencies": {
     "dotenv": "^10.0.0",
-    "luxon": "^1.27.0",
+    "luxon": "^2.0.1",
     "node-fetch": "^2.6.1",
     "null-as-undefined": "^0.3.0",
     "open": "^8.2.1",
     "polka": "^0.5.2",
-    "yargs": "^16.2.0",
+    "yargs": "^17.1.0",
     "ynab": "^1.25.0"
   },
   "devDependencies": {
     "@tsconfig/node14": "^1.0.1",
     "@types/luxon": "^1.27.0",
-    "@types/node": "^15.12.5",
+    "@types/node": "^16.4.12",
     "@types/node-fetch": "^2.5.10",
     "@types/polka": "^0.5.2",
     "@types/yargs": "^16.0.1",
