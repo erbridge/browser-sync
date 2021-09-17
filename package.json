@@ -33,7 +33,7 @@
   "devDependencies": {
     "@tsconfig/node14": "^1.0.1",
     "@types/luxon": "^1.27.0",
-    "@types/node": "^16.4.12",
+    "@types/node": "^16.9.2",
     "@types/node-fetch": "^2.5.10",
     "@types/polka": "^0.5.2",
     "@types/yargs": "^17.0.2",
