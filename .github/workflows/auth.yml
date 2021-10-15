@@ -21,7 +21,7 @@ jobs:
           echo "::set-output name=exists::$EXISTS"
 
       - if: steps.secrets.outputs.exists == 'true'
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v2.3.5
 
       - if: steps.secrets.outputs.exists == 'true'
         uses: nodenv/actions/setup-nodenv@v2
