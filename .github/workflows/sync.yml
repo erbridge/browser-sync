@@ -14,7 +14,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.3.5
       - uses: nodenv/actions/setup-nodenv@v2
       - run: npm ci
       - run: npm run build
