@@ -25,7 +25,7 @@
     "luxon": "^2.0.2",
     "node-fetch": "^2.6.1",
     "null-as-undefined": "^0.3.0",
-    "open": "^8.2.1",
+    "open": "^8.4.0",
     "polka": "^0.5.2",
     "yargs": "^17.2.1",
     "ynab": "^1.25.0"
