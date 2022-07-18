@@ -23,7 +23,7 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "luxon": "^2.0.2",
-    "node-fetch": "^3.0.0",
+    "node-fetch": "^3.2.9",
     "null-as-undefined": "^0.4.0",
     "open": "^8.4.0",
     "polka": "^0.5.2",
